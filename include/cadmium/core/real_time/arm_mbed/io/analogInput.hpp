@@ -9,7 +9,9 @@
 #ifndef RT_ANALOGINPUT_HPP
 #define RT_ANALOGINPUT_HPP
 
-#include <iostream>
+#ifndef
+	#include <iostream>
+#endif
 #include <optional>
 #include <cadmium/core/modeling/atomic.hpp>
 
@@ -17,9 +19,11 @@
 #include <math.h> 
 #include <assert.h>
 #include <memory>
-#include <iomanip>
-#include <iostream>
-#include <fstream>
+#ifndef NO_LOGGING
+	#include <iomanip>
+	#include <iostream>
+	#include <fstream>
+#endif
 #include <string>
 #include <chrono>
 #include <algorithm>
@@ -48,6 +52,7 @@ namespace cadmium {
 
   }; 
 
+#ifndef NO_LOGGING
   /**
      * Insertion operator for ProcessorState objects. It only displays the value of sigma.
      * @param out output stream.
@@ -59,6 +64,7 @@ namespace cadmium {
         out << "Pin: " << (state.output ? 1 : 0); 
         return out;
     }
+#endif
 
   class AnalogInput : public Atomic<AnalogInputState> {
       public:

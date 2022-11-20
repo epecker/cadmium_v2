@@ -22,7 +22,9 @@
 #ifdef RT_ARM_MBED
   #include <mbed.h>
   #include <chrono>
-  #include <iostream>
+  #ifndef NO_LOGGING
+    #include <iostream>
+  #endif
   #include "../exception.hpp"
   #include <cadmium/core/real_time/linux/asynchronous_events.hpp>
 #endif
@@ -179,7 +181,9 @@ namespace cadmium {
                 actual_delay = set_timeout(actual_delay);
               } else {
                 //Missed Real Time Deadline and could not recover (Slip is passed the threshold)
-                std::cout << "MISSED SCHEDULED TIME ADVANCE DEADLINE BY:" << -actual_delay << " microseconds \n";
+#ifndef NO_LOGGING
+		std::cout << "MISSED SCHEDULED TIME ADVANCE DEADLINE BY:" << -actual_delay << " microseconds \n";
+#endif
                 throw CadmiumSimulationException("MISSED SCHEDULED TIME ADVANCE DEADLINE - rt_clock.hpp");
               }
             }

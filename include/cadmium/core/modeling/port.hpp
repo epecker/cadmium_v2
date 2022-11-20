@@ -104,9 +104,10 @@ namespace cadmium {
 		#ifndef RT_ARM_MBED
         	virtual void parallelPropagate(const std::shared_ptr<const PortInterface>& portFrom) = 0;
 		#endif
-
+#ifndef NO_LOGGING
 		//! @return a vector with string representations of each message in the port bag.
 		[[nodiscard]] virtual std::vector<std::string> logMessages() const = 0;  // TODO change to lazy iterator
+#endif
     };
 
 	/**
@@ -206,7 +207,7 @@ namespace cadmium {
 			}
 		#endif
 
-
+#ifndef NO_LOGGING
 		//! @return a vector with string representations of each message in the port bag.
 		[[nodiscard]] std::vector<std::string> logMessages() const override {
 			std::vector<std::string> logs;
@@ -217,6 +218,7 @@ namespace cadmium {
 			}
 			return logs;
 		}
+#endif
     };
 
 	template <typename T>
@@ -255,7 +257,7 @@ namespace cadmium {
 		void addMessage(Args&&... args) {
 			bag.push_back(std::make_shared<const T>(std::forward<Args>(args)...));
 		}
-
+#ifndef NO_LOGGING
 		//! @return a vector with string representations of each message in the port bag.
 		[[nodiscard]] std::vector<std::string> logMessages() const override {
 			std::vector<std::string> logs;
@@ -266,6 +268,7 @@ namespace cadmium {
 			}
 			return logs;
 		}
+#endif
 	};
 
 	template <typename T>

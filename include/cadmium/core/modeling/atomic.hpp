@@ -22,7 +22,9 @@
 #define CADMIUM_CORE_MODELING_ATOMIC_HPP_
 
 #include <memory>
-#include <sstream>
+#ifndef NO_LOGGING
+	#include <sstream>
+#endif
 #include <string>
 #include <utility>
 #include <vector>
@@ -76,9 +78,10 @@ namespace cadmium {
 		 * Virtual method to log the atomic model's current state.
 		 * @return string representing the current state of the atomic model.
 		 */
+#ifndef NO_LOGGING
 		[[nodiscard]] virtual std::string logState() const = 0;
+#endif
     };
-
 	/**
 	 * @brief DEVS atomic model.
 	 *
@@ -155,13 +158,14 @@ namespace cadmium {
         [[nodiscard]] double timeAdvance() const override {
             return this->timeAdvance(state);
         }
-
-		//! @return a string representation of the model state. S must implement the insertion (<<) operator.
+#ifndef NO_LOGGING
+	//! @return a string representation of the model state. S must implement the insertion (<<) operator.
 		[[nodiscard]] std::string logState() const override {
 			std::stringstream ss;
 			ss << state;
 			return ss.str();
 		}
+#endif
     };
 }
 

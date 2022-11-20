@@ -31,9 +31,9 @@
 #include "component.hpp"
 #include "port.hpp"
 #include "../exception.hpp"
-
-#include <iostream>
-
+#ifndef NO_LOGGING
+	#include <iostream>
+#endif
 namespace cadmium {
 	//! Couplings are just tuples <portFrom, portTo>
 	using coupling = std::tuple<std::shared_ptr<PortInterface>, std::shared_ptr<PortInterface>>;

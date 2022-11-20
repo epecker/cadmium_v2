@@ -9,7 +9,9 @@
 #ifndef RT_InterruptINPUT_TEST_HPP
 #define RT_InterruptINPUT_TEST_HPP
 
-#include <iostream>
+#ifndef NO_LOGGING
+	#include <iostream>
+#endif
 #include <optional>
 #include <cadmium/core/modeling/atomic.hpp>
 #include <cadmium/core/real_time/linux/asynchronous_events.hpp>
@@ -18,9 +20,11 @@
 #include <math.h>
 #include <assert.h>
 #include <memory>
-#include <iomanip>
-#include <iostream>
-#include <fstream>
+#ifndef NO_LOGGING
+	#include <iomanip>
+	#include <iostream>
+	#include <fstream>
+#endif
 #include <string>
 #include <chrono>
 #include <algorithm>
@@ -56,7 +60,7 @@ namespace cadmium {
       }
 
   }; 
-
+#ifndef NO_LOGGING
   /**
      * Insertion operator for ProcessorState objects. It only displays the value of sigma.
      * @param out output stream.
@@ -68,7 +72,7 @@ namespace cadmium {
         out << "Pin: " << (state.output ? 1 : 0); 
         return out;
     }
-
+#endif
   class InterruptInput : public Atomic<InterruptInputState>, public AsyncEvent {
       public:
       

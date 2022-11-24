@@ -1,5 +1,5 @@
 /**
- * Virtual interface for implementing loggers in Cadmium 2
+ * CSV logger.
  * Copyright (C) 2021  Román Cárdenas Rodríguez
  * ARSLab - Carleton University
  * GreenLSI - Polytechnic University of Madrid
@@ -18,57 +18,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CADMIUM_CORE_LOGGER_LOGGER_HPP_
-#define CADMIUM_CORE_LOGGER_LOGGER_HPP_
+#ifndef CADMIUM_CORE_LOGGER_UART_LOGGER_HPP_
+#define CADMIUM_CORE_LOGGER_UART_LOGGER_HPP_
 
-#ifndef RT_ARM_MBED
-	#include <mutex>
-#endif
 #include <string>
+#include <utility>
+#include "logger.hpp"
 
 namespace cadmium {
-	//! Cadmium Logger abstract class.
-	class Logger {
+	//! Cadmium CSV logger class.
+	class UARTLogger: public Logger {
 	 private:
-#ifndef RT_ARM_MBED
-		std::mutex mutex;  //!< Mutex for enabling a good parallel execution.
-#endif
+		// std::string sep;       //!< String used as column separation. 
+ 		 // std::ostream& sink;    //!< output stream.
 	 public:
-		//! Constructor function.
-#ifndef RT_ARM_MBED
-		Logger(): mutex() {}
-#else
-		Logger() {}
-#endif
-
-		//! Destructor function.
-		virtual ~Logger() = default;
-
-		//! It locks the logger mutex.
-		inline void lock() {
-#ifndef RT_ARM_MBED
-			mutex.lock();
-#endif
-		}
-
-		//! It unlocks the logger mutex.
-		inline void unlock() {
-#ifndef RT_ARM_MBED
-			mutex.unlock();
-#endif
-		}
-
-		//! Virtual method to execute any task prior to the simulation required by the logger.
-		virtual void start() = 0;
-
-		//! Virtual method to execute any task after the simulation required by the logger.
-		virtual void stop() = 0;
+		/**
+		 * Constructor function.
+		 * @param filepath path to the CSV file.
+		 * @param sep string used as column separation.
+		 */
+		UARTLogger(): Logger() {}
 
 		/**
-		 * Virtual method to log the simulation time after a simulation step. By default, it does nothing.
-		 * @param time new simulation time.
+		 * Constructor function. Separation is set to ",".
+		 * @param filepath path to the CSV file.
 		 */
-		virtual void logTime(double time) {}
+//		explicit UARTLogger() {}
+
+		//! It starts the output file stream and prints the CSV header.
+		void start() override {
+			printf("time , model_id , model_name , port_name , data\n");
+		}
+
+		//! It closes the output file after the simulation.
+		void stop() override {
+		}
 
 		/**
 		 * Virtual method to log atomic models' output messages.
@@ -78,7 +62,9 @@ namespace cadmium {
 		 * @param portName name of the model port in which the output message was created.
 		 * @param output string representation of the output message.
 		 */
-		virtual void logOutput(double time, long modelId, const std::string& modelName, const std::string& portName, const std::string& output) = 0;
+		void logOutput(double time, long modelId, const std::string& modelName, const std::string& portName, const std::string& output) override {
+			printf("%f , %i , %s , %s , %s\n", time, modelId, modelName, portName, output);
+		}
 
 		/**
 		 * Virtual method to log atomic models' states.
@@ -87,8 +73,10 @@ namespace cadmium {
 		 * @param modelName name of the model that generated the output message.
 		 * @param state string representation of the state.
 		 */
-		virtual void logState(double time, long modelId, const std::string& modelName, const std::string& state) = 0;
+		void logState(double time, long modelId, const std::string& modelName, const std::string& state) override {
+			printf("%f , %i , %s , %s \n",time, modelId, modelName, state);
+		}
 	};
 }
 
-#endif //CADMIUM_CORE_LOGGER_LOGGER_HPP_
+#endif //CADMIUM_CORE_LOGGER_UART_LOGGER_HPP_

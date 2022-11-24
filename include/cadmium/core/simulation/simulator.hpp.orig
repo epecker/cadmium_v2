@@ -27,40 +27,40 @@
 #include "../exception.hpp"
 #include "../modeling/atomic.hpp"
 
-// #ifndef RT_ARM_MBED
+#ifndef RT_ARM_MBED
 	#include "../logger/logger.hpp"
-// #endif
+#endif
 
 namespace cadmium {
 	//! DEVS simulator.
     class Simulator: public AbstractSimulator {
      private:
         std::shared_ptr<AtomicInterface> model;       //!< Pointer to the corresponding atomic DEVS model.
-//		#ifndef RT_ARM_MBED
+		#ifndef RT_ARM_MBED
 			std::shared_ptr<Logger> logger;               //!< Pointer to simulation logger.
 			std::shared_ptr<Logger> debugLogger;          //!< Pointer to simulation debug logger.
-//		#endif
+		#endif
      public:
 		/**
 		 * Constructor function.
 		 * @param model pointer to the atomic model.
 		 * @param time initial simulation time.
 		 */
-//		#ifndef RT_ARM_MBED
+		#ifndef RT_ARM_MBED
 			Simulator(std::shared_ptr<AtomicInterface> model, double time): AbstractSimulator(time), model(std::move(model)), logger(), debugLogger() {
 				if (this->model == nullptr) {
 					throw CadmiumSimulationException("no atomic model provided");
 				}
 				timeNext = timeLast + this->model->timeAdvance();
 			}
-//		#else
-//			Simulator(std::shared_ptr<AtomicInterface> model, double time): AbstractSimulator(time), model(std::move(model)){
-//				if (this->model == nullptr) {
-//					throw CadmiumSimulationException("no atomic model provided");
-//				}
-//				timeNext = timeLast + this->model->timeAdvance();
-//			}
-//		#endif
+		#else
+			Simulator(std::shared_ptr<AtomicInterface> model, double time): AbstractSimulator(time), model(std::move(model)){
+				if (this->model == nullptr) {
+					throw CadmiumSimulationException("no atomic model provided");
+				}
+				timeNext = timeLast + this->model->timeAdvance();
+			}
+		#endif
 
 		//! @return pointer to the corresponding atomic DEVS model.
 		[[nodiscard]] std::shared_ptr<Component> getComponent() const override {
@@ -77,7 +77,7 @@ namespace cadmium {
 			return next + 1;
 		}
 
-//		#ifndef RT_ARM_MBED
+		#ifndef RT_ARM_MBED
 			/**
 			 * Sets a new logger.
 			 * @param log pointer to the logger.
@@ -93,7 +93,7 @@ namespace cadmium {
 			void setDebugLogger(const std::shared_ptr<Logger>& log) override {
 				debugLogger = log;
 			}
-//		#endif
+		#endif
 
 		/**
 		 * It performs all the operations before running a simulation.
@@ -101,13 +101,13 @@ namespace cadmium {
 		 */
 		void start(double time) override {
 			timeLast = time;
-//			#ifndef RT_ARM_MBED
+			#ifndef RT_ARM_MBED
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logState(timeLast, modelId, model->getId(), model->logState());
 					logger->unlock();
 				}
-//			#endif
+			#endif
 		};
 
 		/**
@@ -116,13 +116,13 @@ namespace cadmium {
 		 */
 		void stop(double time) override {
 			timeLast = time;
-//			#ifndef RT_ARM_MBED
+			#ifndef RT_ARM_MBED
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logState(timeLast, modelId, model->getId(), model->logState());
 					logger->unlock();
 				}
-//			#endif
+			#endif
 		}
 
 		/**
@@ -171,14 +171,6 @@ namespace cadmium {
 						}
 					}
 				}
-				if(model->getId() != "digitalInput"){ // TODO find a better way to do this, such as if getClass = RTPoll
-					logger->logState(time, modelId, model->getId(), model->logState());
-				}
-				logger->unlock();
-			}
-			#else
-			if (logger != nullptr) {
-				logger->lock();
 				if(model->getId() != "digitalInput"){ // TODO find a better way to do this, such as if getClass = RTPoll
 					logger->logState(time, modelId, model->getId(), model->logState());
 				}

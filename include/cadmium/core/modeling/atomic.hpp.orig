@@ -78,7 +78,9 @@ namespace cadmium {
 		 * Virtual method to log the atomic model's current state.
 		 * @return string representing the current state of the atomic model.
 		 */
+#ifndef NO_LOGGING
 		[[nodiscard]] virtual std::string logState() const = 0;
+#endif
     };
 	/**
 	 * @brief DEVS atomic model.
@@ -90,7 +92,6 @@ namespace cadmium {
     class Atomic: public AtomicInterface {
      protected:
         S state;  //! Atomic model state.
-	std::string ss;
      public:
 		/**
 		 * Constructor function.
@@ -158,19 +159,12 @@ namespace cadmium {
             return this->timeAdvance(state);
         }
 #ifndef NO_LOGGING
-	#ifndef RT_ARM_MBED
-			//! @return a string representation of the model state. S must implement the insertion (<<) operator.
-			[[nodiscard]] std::string logState() const override {
-				std::stringstream ss;
-				ss << state;
-				return ss.str();
-			}
-	#else
-			//! @return a string representation of the model state. S must implement the insertion (<<) operator.
-			[[nodiscard]] std::string logState() const override {
-				return ss;
-			}
-
+	//! @return a string representation of the model state. S must implement the insertion (<<) operator.
+		[[nodiscard]] std::string logState() const override {
+			std::stringstream ss;
+			ss << state;
+			return ss.str();
+		}
 #endif
     };
 }

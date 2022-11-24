@@ -21,41 +21,29 @@
 #ifndef CADMIUM_CORE_LOGGER_LOGGER_HPP_
 #define CADMIUM_CORE_LOGGER_LOGGER_HPP_
 
-#ifndef RT_ARM_MBED
-	#include <mutex>
-#endif
+#include <mutex>
 #include <string>
 
 namespace cadmium {
 	//! Cadmium Logger abstract class.
 	class Logger {
 	 private:
-#ifndef RT_ARM_MBED
 		std::mutex mutex;  //!< Mutex for enabling a good parallel execution.
-#endif
 	 public:
 		//! Constructor function.
-#ifndef RT_ARM_MBED
 		Logger(): mutex() {}
-#else
-		Logger() {}
-#endif
 
 		//! Destructor function.
 		virtual ~Logger() = default;
 
 		//! It locks the logger mutex.
 		inline void lock() {
-#ifndef RT_ARM_MBED
 			mutex.lock();
-#endif
 		}
 
 		//! It unlocks the logger mutex.
 		inline void unlock() {
-#ifndef RT_ARM_MBED
 			mutex.unlock();
-#endif
 		}
 
 		//! Virtual method to execute any task prior to the simulation required by the logger.

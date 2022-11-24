@@ -35,9 +35,9 @@
 #include <vector>
 #include "coordinator.hpp"
 
-// #ifndef RT_ARM_MBED
+#ifndef RT_ARM_MBED
 	#include "../logger/logger.hpp"
-// #endif
+#endif
 
 #include "../real_time/rt_clock.hpp"
 
@@ -47,15 +47,15 @@ namespace cadmium {
      private:
         std::shared_ptr<Coordinator> topCoordinator;  //!< Pointer to top coordinator.
 		
-//		#ifndef RT_ARM_MBED
+		#ifndef RT_ARM_MBED
 			std::shared_ptr<Logger> logger;               //!< Pointer to simulation logger.
 			std::shared_ptr<Logger> debugLogger;          //!< Pointer to simulation debug logger.
-//		#else
-		#ifdef RT_ARM_MBED
+		#else
 			RTClock timmer;
 		#endif
 		
 		void simulationAdvance(double timeNext) {
+			#ifndef RT_ARM_MBED
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logTime(timeNext);
@@ -66,6 +66,8 @@ namespace cadmium {
 					debugLogger->logTime(timeNext);
 					debugLogger->unlock();
 				}
+			#endif
+
 
 			topCoordinator->collection(timeNext);
 			topCoordinator->transition(timeNext);
@@ -83,7 +85,7 @@ namespace cadmium {
 			}
 		#else
 			RootCoordinator(std::shared_ptr<Coupled> model, double time):
-				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), logger(), debugLogger(), timmer(topCoordinator->get_async_subjects()) {}
+				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)),timmer(topCoordinator->get_async_subjects()) {}
 			explicit RootCoordinator(std::shared_ptr<Coupled> model): RootCoordinator(std::move(model), 0) {
 			}
 		#endif
@@ -92,7 +94,7 @@ namespace cadmium {
 			return topCoordinator;
 		}
 
-//		#ifndef RT_ARM_MBED
+		#ifndef RT_ARM_MBED
 			void setLogger(const std::shared_ptr<Logger>& log) {
 				logger = log;
 				topCoordinator->setLogger(log);
@@ -102,31 +104,31 @@ namespace cadmium {
 				debugLogger = log;
 				topCoordinator->setDebugLogger(log);
 			}
-//		#endif
+		#endif
 
 		void start() {
-//			#ifndef RT_ARM_MBED
+			#ifndef RT_ARM_MBED
 				if (logger != nullptr) {
 					logger->start();
 				}
 				if (debugLogger != nullptr) {
 					debugLogger->start();
 				}
-//			#endif
+			#endif
 			topCoordinator->setModelId(0);
 			topCoordinator->start(topCoordinator->getTimeLast());
 		}
 
 		void stop() {
 			topCoordinator->stop(topCoordinator->getTimeLast());
-//			#ifndef RT_ARM_MBED
+			#ifndef RT_ARM_MBED
 				if (logger != nullptr) {
 					logger->stop();
 				}
 				if (debugLogger != nullptr) {
 					debugLogger->stop();
 				}
-//			#endif
+			#endif
 		}
 
 		[[maybe_unused]] void simulate(long nIterations) {

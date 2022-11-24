@@ -170,7 +170,7 @@ namespace cadmium {
 			[[nodiscard]] std::string logState() const override {
 				return ss;
 			}
-
+	#endif
 #endif
     };
 }

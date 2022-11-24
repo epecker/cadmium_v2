@@ -35,7 +35,8 @@
 #include <vector>
 #include "coordinator.hpp"
 
-#ifndef RT_ARM_MBED
+// #ifndef RT_ARM_MBED
+#ifndef NO_LOGGING
 	#include "../logger/logger.hpp"
 #endif
 
@@ -47,15 +48,18 @@ namespace cadmium {
      private:
         std::shared_ptr<Coordinator> topCoordinator;  //!< Pointer to top coordinator.
 		
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			std::shared_ptr<Logger> logger;               //!< Pointer to simulation logger.
 			std::shared_ptr<Logger> debugLogger;          //!< Pointer to simulation debug logger.
-		#else
+		#endif
+		#ifdef RT_ARM_MBED
 			RTClock timmer;
 		#endif
 		
 		void simulationAdvance(double timeNext) {
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logTime(timeNext);
@@ -75,7 +79,7 @@ namespace cadmium {
 		}
      public:
 
-
+#ifndef NO_LOGGING
 		#ifndef RT_ARM_MBED
 			RootCoordinator(std::shared_ptr<Coupled> model, double time):
 				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), logger(), debugLogger() {
@@ -85,16 +89,34 @@ namespace cadmium {
 			}
 		#else
 			RootCoordinator(std::shared_ptr<Coupled> model, double time):
-				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)),timmer(topCoordinator->get_async_subjects()) {}
+//				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), timmer(topCoordinator->get_async_subjects()) {}
+				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), logger(), debugLogger(), timmer(topCoordinator->get_async_subjects()) {} // Edited this line to add loggers (EZE)
 			explicit RootCoordinator(std::shared_ptr<Coupled> model): RootCoordinator(std::move(model), 0) {
 			}
 		#endif
+#else
+		#ifndef RT_ARM_MBED
+			RootCoordinator(std::shared_ptr<Coupled> model, double time):
+				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)) {
+
+				}
+			explicit RootCoordinator(std::shared_ptr<Coupled> model): RootCoordinator(std::move(model), 0) {
+			}
+		#else
+			RootCoordinator(std::shared_ptr<Coupled> model, double time):
+//				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), timmer(topCoordinator->get_async_subjects()) {}
+				topCoordinator(std::make_shared<Coordinator>(std::move(model), time)), timmer(topCoordinator->get_async_subjects()) {} // Edited this line to add loggers (EZE)
+			explicit RootCoordinator(std::shared_ptr<Coupled> model): RootCoordinator(std::move(model), 0) {
+			}
+		#endif
+#endif
 
 		std::shared_ptr<Coordinator> getTopCoordinator() {
 			return topCoordinator;
 		}
 
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			void setLogger(const std::shared_ptr<Logger>& log) {
 				logger = log;
 				topCoordinator->setLogger(log);
@@ -107,7 +129,8 @@ namespace cadmium {
 		#endif
 
 		void start() {
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 				if (logger != nullptr) {
 					logger->start();
 				}
@@ -121,7 +144,8 @@ namespace cadmium {
 
 		void stop() {
 			topCoordinator->stop(topCoordinator->getTimeLast());
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 				if (logger != nullptr) {
 					logger->stop();
 				}

@@ -25,7 +25,8 @@
 #include <memory>
 #include "../modeling/component.hpp"
 
-#ifndef RT_ARM_MBED
+// #ifndef RT_ARM_MBED
+#ifndef NO_LOGGING
 	#include "../logger/logger.hpp"
 #endif
 
@@ -66,7 +67,8 @@ namespace cadmium {
 		 */
 		virtual long setModelId(long next) = 0;
 
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			/**
 			 * Sets a logger (atomic states and output messages).
 			 * @param log pointer to the logger.

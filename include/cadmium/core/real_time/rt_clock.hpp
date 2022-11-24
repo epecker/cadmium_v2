@@ -36,7 +36,7 @@ static long SEC_TO_MICRO   = (1000*1000);
 static long MILI_TO_MICRO  = (1000);
 
 #ifndef MISSED_DEADLINE_TOLERANCE
-  #define MISSED_DEADLINE_TOLERANCE 500
+  #define MISSED_DEADLINE_TOLERANCE 80000
 #endif
 // extern volatile bool interrupted;
 

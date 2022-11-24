@@ -9,7 +9,7 @@
 #ifndef RT_ANALOGINPUT_HPP
 #define RT_ANALOGINPUT_HPP
 
-#ifndef
+#ifndef NO_LOGGING
 	#include <iostream>
 #endif
 #include <optional>

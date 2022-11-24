@@ -174,7 +174,8 @@ namespace cadmium {
 			clear();
 		}
 
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 
 			/**
 			 * It sets the debug logger to all the child components.

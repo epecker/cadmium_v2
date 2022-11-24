@@ -70,7 +70,7 @@ namespace cadmium {
 
         // default constructor
         PWMOutput(const std::string& id, PinName pin): Atomic<PWMOutputState>(id, PWMOutputState())  {
-          in = addInPort<bool>("in");
+          in = addInPort<double>("in");
           pwmPin = new mbed::PwmOut(pin);
           pwmPin->period_ms(10);
           pwmPin->pulsewidth_ms(0);

@@ -27,7 +27,8 @@
 #include "../exception.hpp"
 #include "../modeling/atomic.hpp"
 
-#ifndef RT_ARM_MBED
+// #ifndef RT_ARM_MBED
+#ifndef NO_LOGGING
 	#include "../logger/logger.hpp"
 #endif
 
@@ -36,7 +37,8 @@ namespace cadmium {
     class Simulator: public AbstractSimulator {
      private:
         std::shared_ptr<AtomicInterface> model;       //!< Pointer to the corresponding atomic DEVS model.
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			std::shared_ptr<Logger> logger;               //!< Pointer to simulation logger.
 			std::shared_ptr<Logger> debugLogger;          //!< Pointer to simulation debug logger.
 		#endif
@@ -46,7 +48,8 @@ namespace cadmium {
 		 * @param model pointer to the atomic model.
 		 * @param time initial simulation time.
 		 */
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			Simulator(std::shared_ptr<AtomicInterface> model, double time): AbstractSimulator(time), model(std::move(model)), logger(), debugLogger() {
 				if (this->model == nullptr) {
 					throw CadmiumSimulationException("no atomic model provided");
@@ -77,7 +80,8 @@ namespace cadmium {
 			return next + 1;
 		}
 
-		#ifndef RT_ARM_MBED
+//		#ifndef RT_ARM_MBED
+		#ifndef NO_LOGGING
 			/**
 			 * Sets a new logger.
 			 * @param log pointer to the logger.
@@ -101,7 +105,8 @@ namespace cadmium {
 		 */
 		void start(double time) override {
 			timeLast = time;
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logState(timeLast, modelId, model->getId(), model->logState());
@@ -116,7 +121,8 @@ namespace cadmium {
 		 */
 		void stop(double time) override {
 			timeLast = time;
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 				if (logger != nullptr) {
 					logger->lock();
 					logger->logState(timeLast, modelId, model->getId(), model->logState());
@@ -149,7 +155,8 @@ namespace cadmium {
 			} else {
 				auto e = time - timeLast;
 				(time < timeNext) ? model->externalTransition(e) : model->confluentTransition(e);
-				#ifndef RT_ARM_MBED
+//				#ifndef RT_ARM_MBED
+				#ifndef NO_LOGGING
 				if (debugLogger != nullptr) {
 					debugLogger->lock();
 					for (const auto& inPort: model->getInPorts()) {
@@ -161,7 +168,8 @@ namespace cadmium {
 				}
 				#endif
 			}
-			#ifndef RT_ARM_MBED
+//			#ifndef RT_ARM_MBED
+			#ifndef NO_LOGGING
 			if (logger != nullptr) {
 				logger->lock();
 				if (time >= timeNext) {
